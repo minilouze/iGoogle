@@ -4,12 +4,12 @@
       <md-card-header>
         <md-icon>nights_stay</md-icon>
         <div class="md-title">Météo</div>
-        <div class="md-subhead">{{ location.name }}</div>
+        <div class="md-subhead">{{ ville }}</div>
       </md-card-header>
 
       <md-card-content>
-        <img v-bind:src="current.weather_icons[0]" alt="meteo icon" />
-        <span class="temperature">{{ current.temperature }}°</span>
+        <img v-bind:src="icon" alt="meteo icon" />
+        <span class="temperature">{{ temperature }}°</span>
       </md-card-content>
 
       <md-card-actions>
@@ -25,29 +25,10 @@
 </template>
 
 <script>
-import axios from "axios";
 
 export default {
   name: "Widget",
-  data() {
-    return {
-      info: null,
-      location: null,
-      current: null,
-    };
-  },
-  mounted() {
-    axios
-      .get(
-        "http://api.weatherstack.com/current?access_key=8a3910f661c45e015711823eb5df116a&query=fetch:ip"
-      )
-      .then((response) => {
-        this.info = response.data;
-        console.log(this.info);
-        this.location = this.info.location;
-        this.current = this.info.current;
-      });
-  },
+  props: ["temperature", "icon", "ville"],
 };
 </script>
 
