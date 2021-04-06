@@ -2,7 +2,7 @@
   <md-card md-with-hover>
     <md-ripple>
       <md-card-header>
-        <md-icon>nights_stay</md-icon>
+        <md-icon v-bind:style="{color:widgetsColor}">nights_stay</md-icon>
         <div class="md-title">Météo</div>
         <div class="md-subhead">{{ ville }}</div>
       </md-card-header>
@@ -28,7 +28,7 @@
 
 export default {
   name: "Widget",
-  props: ["id", "temperature", "icon", "ville"],
+  props: ["id", "widgetsColor", "temperature", "icon", "ville"],
   methods: {
     deleteWidget: function() {
       this.$emit('deleteWidget', this.id);

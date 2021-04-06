@@ -1,7 +1,13 @@
 <template>
   <div id="app">
-    <Menu></Menu>
-    <WidgetsList :widgets="widgets"></WidgetsList>
+    <div id="topBar">
+      <!-- <md-button class="md-icon-button md-raised" id="color-picker">
+      <md-icon>colorize</md-icon>
+    </md-button> -->
+      <InputColorPicker v-model="widgetsColor" />
+      <Menu></Menu>
+    </div>
+    <WidgetsList :widgets="widgets" :widgetsColor="widgetsColor"></WidgetsList>
 
     <md-speed-dial :class="bottomPosition" id="add-widget">
       <md-speed-dial-target>
@@ -32,6 +38,7 @@
 import Menu from "./components/Menu.vue";
 import WidgetsList from "./components/WidgetsList.vue";
 import axios from "axios";
+import InputColorPicker from "vue-native-color-picker";
 
 export default {
   name: "App",
@@ -42,33 +49,35 @@ export default {
     modal: {
       active: false,
     },
+    widgetsColor:
+      "var(--md-theme-default-icon-on-background, rgba(0,0,0,0.54))",
   }),
   components: {
     Menu,
     WidgetsList,
+    InputColorPicker,
   },
   methods: {
     addMeteoWidget: function () {
       this.modal.active = true;
     },
     getMeteo: function () {
-      
       axios
-      // .get(
-      //   "http://api.weatherstack.com/current?access_key=8a3910f661c45e015711823eb5df116a&query=fetch:ip"
-      // )
-      .get(
-        `http://api.weatherstack.com/current?access_key=8a3910f661c45e015711823eb5df116a&query=${this.value}`
-      )
-      .then((response) => {
-        let self = this;
-        const widget = {
-          ville: response.data.location.name,
-          temperature: response.data.current.temperature,
-          icon: response.data.current.weather_icons[0]
-        };
-        self.widgets.push(widget);
-      });
+        // .get(
+        //   "http://api.weatherstack.com/current?access_key=8a3910f661c45e015711823eb5df116a&query=fetch:ip"
+        // )
+        .get(
+          `http://api.weatherstack.com/current?access_key=8a3910f661c45e015711823eb5df116a&query=${this.value}`
+        )
+        .then((response) => {
+          let self = this;
+          const widget = {
+            ville: response.data.location.name,
+            temperature: response.data.current.temperature,
+            icon: response.data.current.weather_icons[0],
+          };
+          self.widgets.push(widget);
+        });
     },
   },
 };
@@ -84,6 +93,16 @@ export default {
   min-height: 100vh;
   padding: 1rem;
   position: relative;
+  #topBar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  // #color-picker {
+  //   position: absolute;
+  //   left: 1rem;
+  //   top: 1rem;
+  // }
   #add-widget {
     position: absolute;
     right: 1rem;
