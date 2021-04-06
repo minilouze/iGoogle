@@ -16,7 +16,7 @@
         <md-button class="md-icon-button md-raised">
           <md-icon>settings</md-icon>
         </md-button>
-        <md-button class="md-icon-button md-raised md-accent">
+        <md-button @click="deleteWidget" class="md-icon-button md-raised md-accent">
           <md-icon>delete</md-icon>
         </md-button>
       </md-card-actions>
@@ -28,7 +28,12 @@
 
 export default {
   name: "Widget",
-  props: ["temperature", "icon", "ville"],
+  props: ["id", "temperature", "icon", "ville"],
+  methods: {
+    deleteWidget: function() {
+      this.$emit('deleteWidget', this.id);
+    }
+  }
 };
 </script>
 
