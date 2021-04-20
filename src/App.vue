@@ -4,13 +4,13 @@
       <!-- <md-button class="md-icon-button md-raised" id="color-picker">
       <md-icon>colorize</md-icon>
     </md-button> -->
-      <InputColorPicker v-model="widgetsColor" />
+      <InputColorPicker v-model="themeColor" />
       <Menu></Menu>
     </div>
-    <WidgetsList :widgets="widgets" :widgetsColor="widgetsColor"></WidgetsList>
+    <WidgetsList :widgets="widgets" :themeColor="themeColor"></WidgetsList>
 
     <md-speed-dial :class="bottomPosition" id="add-widget">
-      <md-speed-dial-target>
+      <md-speed-dial-target class="md-primary">
         <md-icon>add</md-icon>
       </md-speed-dial-target>
 
@@ -49,8 +49,7 @@ export default {
     modal: {
       active: false,
     },
-    widgetsColor:
-      "var(--md-theme-default-icon-on-background, rgba(0,0,0,0.54))",
+    themeColor: "#448aff",
   }),
   components: {
     Menu,
@@ -80,6 +79,11 @@ export default {
         });
     },
   },
+  watch: {
+    themeColor: color => {
+      document.documentElement.style.setProperty('--md-theme-default-primary', color);
+    },
+  },
 };
 </script>
 
@@ -98,11 +102,6 @@ export default {
     justify-content: space-between;
     align-items: center;
   }
-  // #color-picker {
-  //   position: absolute;
-  //   left: 1rem;
-  //   top: 1rem;
-  // }
   #add-widget {
     position: absolute;
     right: 1rem;
