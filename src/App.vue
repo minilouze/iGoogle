@@ -69,19 +69,29 @@ export default {
           `http://api.weatherstack.com/current?access_key=8a3910f661c45e015711823eb5df116a&query=${this.value}`
         )
         .then((response) => {
-          let self = this;
+          const data = response.data;
           const widget = {
-            ville: response.data.location.name,
-            temperature: response.data.current.temperature,
-            icon: response.data.current.weather_icons[0],
+            widgetType: {
+              componentName: "Meteo",
+              materialIcon: "thermostat",
+              title: "Météo",
+              subtitle: data.location.name,
+              properties: {
+                temperature: data.current.temperature,
+                icon: data.current.weather_icons[0],
+              },
+            },
           };
-          self.widgets.push(widget);
+          this.widgets.push(widget);
         });
     },
   },
   watch: {
-    themeColor: color => {
-      document.documentElement.style.setProperty('--md-theme-default-primary', color);
+    themeColor: (color) => {
+      document.documentElement.style.setProperty(
+        "--md-theme-default-primary",
+        color
+      );
     },
   },
 };

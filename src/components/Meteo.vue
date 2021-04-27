@@ -1,37 +1,18 @@
 <template>
-  <md-card md-with-hover>
-    <md-card-header>
-      <md-icon v-bind:style="{ color: themeColor }">nights_stay</md-icon>
-      <div class="md-title">Météo</div>
-      <div class="md-subhead">{{ ville }}</div>
-    </md-card-header>
-
-    <md-card-content>
-      <img v-bind:src="icon" alt="meteo icon" />
-      <span class="temperature">{{ temperature }}°</span>
-    </md-card-content>
-
-    <md-card-actions>
-      <md-button class="md-icon-button md-raised">
-        <md-icon>settings</md-icon>
-      </md-button>
-      <md-button
-        @click="deleteWidget"
-        class="md-icon-button md-raised md-accent">
-        <md-icon>delete</md-icon>
-      </md-button>
-    </md-card-actions>
-  </md-card>
+  <div>
+    <img :src="properties.icon" alt="meteo icon" />
+    <span class="temperature">{{ properties.temperature }}°</span>
+  </div>
 </template>
 
 <script>
 export default {
   name: "Widget",
-  props: ["id", "themeColor", "temperature", "icon", "ville"],
-  methods: {
-    deleteWidget: function () {
-      this.$emit("deleteWidget", this.id);
-    },
+  props: {
+    properties: {
+      icon: String,
+      temperature: Number
+    }
   },
 };
 </script>

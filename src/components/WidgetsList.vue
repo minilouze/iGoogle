@@ -1,27 +1,29 @@
 <template>
   <div>
-    <meteo v-for="(widget, index) in widgets" :key="index"
-    v-bind:id="index"
-    v-bind:themeColor="themeColor"
-    v-bind:ville="widget.ville"
-    v-bind:temperature="widget.temperature"
-    v-bind:icon="widget.icon"
-    @deleteWidget="deleteWidget"/>
+    <widget
+      v-for="(widget, index) in widgets"
+      :key="index"
+      :id="index"
+      :themeColor="themeColor"
+      :widgetType="widget.widgetType"
+      @deleteWidget="deleteWidget"
+    />
   </div>
 </template>
 
 <script>
-import Meteo from "./Meteo"
+import Widget from "./Widget";
+
 export default {
   name: "WidgetsList",
   props: ["widgets", "themeColor"],
   components: {
-      Meteo
+    Widget,
   },
   methods: {
-    deleteWidget: function(index) {
+    deleteWidget: function (index) {
       this.widgets.splice(index, 1);
-    }
-  }
+    },
+  },
 };
 </script>
