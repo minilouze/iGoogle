@@ -15,7 +15,10 @@
       </md-speed-dial-target>
 
       <md-speed-dial-content>
-        <md-button class="md-icon-button" @click="askCityForMeteo()">
+        <md-button class="md-icon-button" @click="openPicturesPrompt()">
+          <md-icon>image</md-icon>
+        </md-button>
+        <md-button class="md-icon-button" @click="openWeatherPrompt()">
           <md-icon>thermostat</md-icon>
         </md-button>
         <md-button class="md-icon-button" @click="getClock()">
@@ -25,14 +28,25 @@
     </md-speed-dial>
 
     <md-dialog-prompt
-      :md-active.sync="modal.active"
-      v-model="city"
+      :md-active.sync="weatherPrompt.active"
+      v-model="weatherPrompt.city"
       md-title="Pour quelle ville souhaitez-vous la météo ?"
       md-input-maxlength="30"
       md-input-placeholder="Écrivez le nom de la ville..."
       md-cancel-text="Annuler"
       md-confirm-text="Valider"
-      @md-confirm="getMeteo"
+      @md-confirm="getWeather"
+    />
+
+    <md-dialog-prompt
+      :md-active.sync="picturesPrompt.active"
+      v-model="picturesPrompt.search"
+      md-title="Quelles images souhaitez-vous ?"
+      md-input-maxlength="30"
+      md-input-placeholder="Écrivez vos mots-clés..."
+      md-cancel-text="Annuler"
+      md-confirm-text="Valider"
+      @md-confirm="getPictures"
     />
   </div>
 </template>
@@ -42,18 +56,19 @@ import Menu from "./components/Menu.vue";
 import WidgetsList from "./components/WidgetsList.vue";
 import axios from "axios";
 import InputColorPicker from "vue-native-color-picker";
-import WidgetsAPI from "./widgetsAPI";
-
-console.log(WidgetsAPI.DELIVERY);
 
 export default {
   name: "App",
   data: () => ({
     widgets: [],
-    city: "",
     bottomPosition: null,
-    modal: {
+    weatherPrompt: {
       active: false,
+      city: "",
+    },
+    picturesPrompt: {
+      active: false,
+      search: "",
     },
     themeColor: "#448aff",
   }),
@@ -63,10 +78,13 @@ export default {
     InputColorPicker,
   },
   methods: {
-    askCityForMeteo: function () {
-      this.modal.active = true;
+    openWeatherPrompt: function () {
+      this.weatherPrompt.active = true;
     },
-    getMeteo: function () {
+    openPicturesPrompt: function () {
+      this.picturesPrompt.active = true;
+    },
+    getWeather: function () {
       axios
         // .get(
         //   "http://api.weatherstack.com/current?access_key=8a3910f661c45e015711823eb5df116a&query=fetch:ip"
@@ -78,7 +96,7 @@ export default {
           const data = response.data;
           const widget = {
             widgetType: {
-              componentName: "Meteo",
+              componentName: "Weather",
               configurable: true,
               materialIcon: "thermostat",
               title: "Météo",
@@ -90,20 +108,55 @@ export default {
             },
           };
           this.widgets.push(widget);
-          this.city = "";
+          this.weatherPrompt.city = "";
         });
     },
-    getClock: function() {
+    getClock: function () {
       const widget = {
         widgetType: {
           componentName: "Clock",
           materialIcon: "schedule",
           configurable: false,
           title: "Date/Heure",
-        }
-      }
+        },
+      };
       this.widgets.push(widget);
-    }
+    },
+    getPictures: function () {
+      const pictures = [];
+      axios
+        .get(
+          `https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=4c961240fea7a5205c865fd44e0152af&text=${this.picturesPrompt.search}`
+        )
+        .then((response) => {
+          response = new DOMParser().parseFromString(
+            response.data,
+            "application/xml"
+          );
+          for (let photo of response.getElementsByTagName("photo")) {
+            const serverId = photo.getAttribute("server");
+            const id = photo.getAttribute("id");
+            const secret = photo.getAttribute("secret");
+            pictures.push(
+              `https://live.staticflickr.com/${serverId}/${id}_${secret}_s.jpg`
+            );
+          }
+        });
+      const widget = {
+        widgetType: {
+          componentName: "Pictures",
+          configurable: true,
+          materialIcon: "image",
+          title: "Images",
+          subtitle: this.picturesPrompt.search,
+          properties: {
+            pictures,
+          },
+        },
+      };
+      this.widgets.push(widget);
+      this.picturesPrompt.search = "";
+    },
   },
   watch: {
     themeColor: (color) => {

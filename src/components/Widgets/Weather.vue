@@ -1,6 +1,6 @@
 <template>
   <div>
-    <img :src="properties.icon" alt="meteo icon" />
+    <img :src="properties.icon" alt="weather icon" />
     <span class="temperature">{{ properties.temperature }}°</span>
   </div>
 </template>

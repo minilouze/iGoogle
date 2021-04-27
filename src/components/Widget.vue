@@ -25,15 +25,17 @@
 
 <script>
 
-import Meteo from "./Widgets/Meteo";
-import Clock from "./Widgets/Clock"
+import Weather from "./Widgets/Weather";
+import Clock from "./Widgets/Clock";
+import Pictures from "./Widgets/Pictures";
 
 export default {
   name: "Widget",
   props: ["id", "widgetType", "themeColor"],
   components: {
-    Meteo,
-    Clock
+    Weather,
+    Clock,
+    Pictures
   },
   methods: {
     deleteWidget: function () {
