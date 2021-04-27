@@ -79,6 +79,7 @@ export default {
           const widget = {
             widgetType: {
               componentName: "Meteo",
+              configurable: true,
               materialIcon: "thermostat",
               title: "Météo",
               subtitle: data.location.name,
@@ -97,6 +98,7 @@ export default {
         widgetType: {
           componentName: "Clock",
           materialIcon: "schedule",
+          configurable: false,
           title: "Date/Heure",
         }
       }

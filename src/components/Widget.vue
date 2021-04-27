@@ -3,7 +3,7 @@
     <md-card-header>
       <md-icon :style="{ color: themeColor }">{{ widgetType.materialIcon }}</md-icon>
       <div class="md-title">{{ widgetType.title }}</div>
-      <div :v-if="widgetType.subtitle" class="md-subhead">{{ widgetType.subtitle }}</div>
+      <div v-if="widgetType.subtitle" class="md-subhead">{{ widgetType.subtitle }}</div>
     </md-card-header>
 
     <md-card-content>
@@ -11,7 +11,7 @@
     </md-card-content>
 
     <md-card-actions>
-      <md-button class="md-icon-button md-raised">
+      <md-button v-if="widgetType.configurable" class="md-icon-button md-raised">
         <md-icon>settings</md-icon>
       </md-button>
       <md-button
