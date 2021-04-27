@@ -15,15 +15,18 @@
       </md-speed-dial-target>
 
       <md-speed-dial-content>
-        <md-button class="md-icon-button" @click="addMeteoWidget()">
-          <md-icon>nights_stay</md-icon>
+        <md-button class="md-icon-button" @click="askCityForMeteo()">
+          <md-icon>thermostat</md-icon>
+        </md-button>
+        <md-button class="md-icon-button" @click="getClock()">
+          <md-icon>schedule</md-icon>
         </md-button>
       </md-speed-dial-content>
     </md-speed-dial>
 
     <md-dialog-prompt
       :md-active.sync="modal.active"
-      v-model="value"
+      v-model="city"
       md-title="Pour quelle ville souhaitez-vous la météo ?"
       md-input-maxlength="30"
       md-input-placeholder="Écrivez le nom de la ville..."
@@ -39,12 +42,15 @@ import Menu from "./components/Menu.vue";
 import WidgetsList from "./components/WidgetsList.vue";
 import axios from "axios";
 import InputColorPicker from "vue-native-color-picker";
+import WidgetsAPI from "./widgetsAPI";
+
+console.log(WidgetsAPI.DELIVERY);
 
 export default {
   name: "App",
   data: () => ({
     widgets: [],
-    value: "",
+    city: "",
     bottomPosition: null,
     modal: {
       active: false,
@@ -57,7 +63,7 @@ export default {
     InputColorPicker,
   },
   methods: {
-    addMeteoWidget: function () {
+    askCityForMeteo: function () {
       this.modal.active = true;
     },
     getMeteo: function () {
@@ -66,7 +72,7 @@ export default {
         //   "http://api.weatherstack.com/current?access_key=8a3910f661c45e015711823eb5df116a&query=fetch:ip"
         // )
         .get(
-          `http://api.weatherstack.com/current?access_key=8a3910f661c45e015711823eb5df116a&query=${this.value}`
+          `http://api.weatherstack.com/current?access_key=8a3910f661c45e015711823eb5df116a&query=${this.city}`
         )
         .then((response) => {
           const data = response.data;
@@ -83,8 +89,19 @@ export default {
             },
           };
           this.widgets.push(widget);
+          this.city = "";
         });
     },
+    getClock: function() {
+      const widget = {
+        widgetType: {
+          componentName: "Clock",
+          materialIcon: "schedule",
+          title: "Date/Heure",
+        }
+      }
+      this.widgets.push(widget);
+    }
   },
   watch: {
     themeColor: (color) => {

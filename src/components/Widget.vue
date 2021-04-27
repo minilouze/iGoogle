@@ -3,7 +3,7 @@
     <md-card-header>
       <md-icon :style="{ color: themeColor }">{{ widgetType.materialIcon }}</md-icon>
       <div class="md-title">{{ widgetType.title }}</div>
-      <div class="md-subhead">{{ widgetType.subtitle }}</div>
+      <div :v-if="widgetType.subtitle" class="md-subhead">{{ widgetType.subtitle }}</div>
     </md-card-header>
 
     <md-card-content>
@@ -25,13 +25,15 @@
 
 <script>
 
-import Meteo from "./Meteo";
+import Meteo from "./Widgets/Meteo";
+import Clock from "./Widgets/Clock"
 
 export default {
   name: "Widget",
   props: ["id", "widgetType", "themeColor"],
   components: {
-    Meteo
+    Meteo,
+    Clock
   },
   methods: {
     deleteWidget: function () {
