@@ -90,7 +90,7 @@ export default {
         //   "http://api.weatherstack.com/current?access_key=8a3910f661c45e015711823eb5df116a&query=fetch:ip"
         // )
         .get(
-          `http://api.weatherstack.com/current?access_key=8a3910f661c45e015711823eb5df116a&query=${this.city}`
+          `http://api.weatherstack.com/current?access_key=8a3910f661c45e015711823eb5df116a&query=${this.weatherPrompt.city}`
         )
         .then((response) => {
           const data = response.data;
@@ -151,6 +151,7 @@ export default {
           subtitle: this.picturesPrompt.search,
           properties: {
             pictures,
+            nbPictures: 3
           },
         },
       };
