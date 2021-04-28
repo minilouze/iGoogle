@@ -15,6 +15,9 @@
       </md-speed-dial-target>
 
       <md-speed-dial-content>
+        <md-button class="md-icon-button" @click="getMichelBillaudTwitter()">
+          <md-icon>person</md-icon>
+        </md-button>
         <md-button class="md-icon-button" @click="openPicturesPrompt()">
           <md-icon>image</md-icon>
         </md-button>
@@ -158,6 +161,17 @@ export default {
       this.widgets.push(widget);
       this.picturesPrompt.search = "";
     },
+    getMichelBillaudTwitter: function() {
+      const widget = {
+        widgetType: {
+          componentName: "MichelBillaudTwitter",
+          materialIcon: "person",
+          configurable: false,
+          title: "@MichelBillaud"
+        }
+      }
+      this.widgets.push(widget);
+    }
   },
   watch: {
     themeColor: (color) => {
