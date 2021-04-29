@@ -18,6 +18,9 @@
         <md-button class="md-icon-button" @click="getMichelBillaudTwitter()">
           <md-icon>person</md-icon>
         </md-button>
+        <md-button class="md-icon-button" @click="openNewsPrompt()">
+          <md-icon>article</md-icon>
+        </md-button>
         <md-button class="md-icon-button" @click="openPicturesPrompt()">
           <md-icon>image</md-icon>
         </md-button>
@@ -51,6 +54,17 @@
       md-confirm-text="Valider"
       @md-confirm="getPictures"
     />
+
+    <md-dialog-prompt
+      :md-active.sync="newsPrompt.active"
+      v-model="newsPrompt.search"
+      md-title="Quelles informations recherchez-vous ?"
+      md-input-maxlength="30"
+      md-input-placeholder="Écrivez vos mots-clés..."
+      md-cancel-text="Annuler"
+      md-confirm-text="Valider"
+      @md-confirm="getNews"
+    />
   </div>
 </template>
 
@@ -73,6 +87,10 @@ export default {
       active: false,
       search: "",
     },
+    newsPrompt: {
+      active: false,
+      search: "",
+    },
     themeColor: "#448aff",
   }),
   components: {
@@ -86,6 +104,9 @@ export default {
     },
     openPicturesPrompt: function () {
       this.picturesPrompt.active = true;
+    },
+    openNewsPrompt: function () {
+      this.newsPrompt.active = true;
     },
     getWeather: function () {
       axios
@@ -171,6 +192,26 @@ export default {
         }
       }
       this.widgets.push(widget);
+    },
+    getNews: function() {
+      axios
+        .get(`https://newsapi.org/v2/everything?q=${this.newsPrompt.search}&apiKey=d8567e8a076140a08c7ee9d4a2d459fa`)
+        .then(response => {
+          const widget = {
+            widgetType: {
+              componentName: "News",
+              configurable: false,
+              materialIcon: "article",
+              title: "News",
+              subtitle: this.newsPrompt.search,
+              properties: {
+                articles: response.data.articles
+              }
+            }
+          };
+          this.widgets.push(widget);
+          this.newsPrompt.search = "";
+        });
     }
   },
   watch: {

@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "axios": "^0.21.1",
-    "core-js": "^3.6.5",
+    "core-js": "^3.11.1",
     "vue": "^2.6.11",
     "vue-material": "^1.0.0-beta-15",
     "vue-native-color-picker": "^1.2.0"

@@ -29,6 +29,7 @@ import Weather from "./Widgets/Weather";
 import Clock from "./Widgets/Clock";
 import Pictures from "./Widgets/Pictures";
 import MichelBillaudTwitter from "./Widgets/MichelBillaudTwitter";
+import News from "./Widgets/News";
 
 export default {
   name: "Widget",
@@ -37,7 +38,8 @@ export default {
     Weather,
     Clock,
     Pictures,
-    MichelBillaudTwitter
+    MichelBillaudTwitter,
+    News
   },
   methods: {
     deleteWidget: function () {
