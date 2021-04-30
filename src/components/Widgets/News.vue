@@ -9,7 +9,6 @@
 </template>
 
 <script>
-//d8567e8a076140a08c7ee9d4a2d459fa
 export default {
     name: "News",
     props: {
