@@ -1,15 +1,15 @@
 <template>
   <div>
     <grid-layout
-      :layout.sync="gridOptions.layout"
+      :layout.sync="widgets"
       :col-num="4"
-      :is-draggable="gridOptions.draggable"
-      :is-resizable="gridOptions.resizable"
+      :is-draggable="draggable"
+      :is-resizable="resizable"
       :vertical-compact="true"
       :use-css-transforms="true"
     >
       <grid-item
-        v-for="item in gridOptions.layout"
+        v-for="item in widgets"
         :key="item.i"
         :x="item.x"
         :y="item.y"
@@ -17,6 +17,7 @@
         :h="item.h"
         :i="item.i"
         :static="false"
+        @moved="movedEvent"
       >
         <widget
           :themeColor="themeColor"
@@ -35,37 +36,26 @@ import { GridLayout, GridItem } from "vue-grid-layout";
 export default {
   name: "WidgetsList",
   props: ["widgets", "themeColor"],
-  data: function () {
-    return {};
-  },
   components: {
     Widget,
     GridLayout,
     GridItem,
   },
-  computed: {
-    gridOptions: function () {
-      return {
-        layout: this.widgets.map(function (widget, index) {
-          return {
-            widget,
-            x: (index % 4),
-            y: Math.floor(index / 4),
-            w: 1,
-            h: 1,
-            i: index,
-          };
-        }),
-        draggable: true,
-        resizable: true,
-        responsive: true,
-        index: 0,
-      };
-    },
+  data() {
+    return {
+      draggable: true,
+      resizable: true,
+      responsive: true,
+      index: 0,
+    };
   },
   methods: {
     deleteWidget: function (index) {
       this.widgets.splice(index, 1);
+    },
+    movedEvent: function (i, newX, newY) {
+      const msg = "MOVED i=" + i + ", X=" + newX + ", Y=" + newY;
+      console.log(msg);
     },
   },
 };

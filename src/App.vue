@@ -144,7 +144,7 @@ export default {
           title: "Date/Heure",
         },
       };
-      this.widgets.push(widget);
+      this.addWidget(widget);
     },
     getPictures: function () {
       const pictures = [];
@@ -175,28 +175,30 @@ export default {
           subtitle: this.picturesPrompt.search,
           properties: {
             pictures,
-            nbPictures: 3
+            nbPictures: 3,
           },
         },
       };
       this.widgets.push(widget);
       this.picturesPrompt.search = "";
     },
-    getMichelBillaudTwitter: function() {
+    getMichelBillaudTwitter: function () {
       const widget = {
         widgetType: {
           componentName: "MichelBillaudTwitter",
           materialIcon: "person",
           configurable: false,
-          title: "@MichelBillaud"
-        }
-      }
+          title: "@MichelBillaud",
+        },
+      };
       this.widgets.push(widget);
     },
-    getNews: function() {
+    getNews: function () {
       axios
-        .get(`https://newsapi.org/v2/everything?q=${this.newsPrompt.search}&apiKey=d8567e8a076140a08c7ee9d4a2d459fa`)
-        .then(response => {
+        .get(
+          `https://newsapi.org/v2/everything?q=${this.newsPrompt.search}&apiKey=d8567e8a076140a08c7ee9d4a2d459fa`
+        )
+        .then((response) => {
           const widget = {
             widgetType: {
               componentName: "News",
@@ -205,14 +207,26 @@ export default {
               title: "News",
               subtitle: this.newsPrompt.search,
               properties: {
-                articles: response.data.articles
-              }
-            }
+                articles: response.data.articles,
+              },
+            },
           };
           this.widgets.push(widget);
           this.newsPrompt.search = "";
         });
-    }
+    },
+    addWidget: function (widget) {
+      const nbWidget = this.widgets.length;
+      const widg = {
+        widget,
+        x: nbWidget % 4,
+        y: Math.floor(nbWidget / 4),
+        w: 1,
+        h: 1,
+        i: nbWidget,
+      };
+      this.widgets.push(widg)
+    },
   },
   watch: {
     themeColor: (color) => {
