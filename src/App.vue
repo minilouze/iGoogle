@@ -9,7 +9,7 @@
     </div>
     <WidgetsList :widgets="widgets" :themeColor="themeColor"></WidgetsList>
 
-    <md-speed-dial :class="bottomPosition" id="add-widget">
+    <md-speed-dial :class="rightPosition" id="add-widget">
       <md-speed-dial-target class="md-primary">
         <md-icon>add</md-icon>
       </md-speed-dial-target>
@@ -236,7 +236,7 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  min-height: 100vh;
+  height: 100vh;
   padding: 1rem;
   position: relative;
   #topBar {
@@ -245,7 +245,7 @@ export default {
     align-items: center;
   }
   #add-widget {
-    position: absolute;
+    position: fixed;
     right: 1rem;
     bottom: 1rem;
   }

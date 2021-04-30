@@ -4,7 +4,8 @@
     :col-num="4"
     :is-draggable="true"
     :is-resizable="true"
-    
+    :responsive="true"
+    :margin="[56,0]"
     :vertical-compact="true"
     :use-css-transforms="true"
   >
