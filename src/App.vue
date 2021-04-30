@@ -118,33 +118,29 @@ export default {
         )
         .then((response) => {
           const data = response.data;
-          const widget = {
-            widgetType: {
-              componentName: "Weather",
-              configurable: true,
-              materialIcon: "thermostat",
-              title: "Météo",
-              subtitle: data.location.name,
-              properties: {
-                temperature: data.current.temperature,
-                icon: data.current.weather_icons[0],
-              },
+          const widgetInfo = {
+            componentName: "Weather",
+            configurable: true,
+            materialIcon: "thermostat",
+            title: "Météo",
+            subtitle: data.location.name,
+            properties: {
+              temperature: data.current.temperature,
+              icon: data.current.weather_icons[0],
             },
           };
-          this.widgets.push(widget);
+          this.addWidget(widgetInfo);
           this.weatherPrompt.city = "";
         });
     },
     getClock: function () {
-      const widget = {
-        widgetType: {
-          componentName: "Clock",
-          materialIcon: "schedule",
-          configurable: false,
-          title: "Date/Heure",
-        },
+      const widgetInfo = {
+        componentName: "Clock",
+        materialIcon: "schedule",
+        configurable: false,
+        title: "Date/Heure",
       };
-      this.addWidget(widget);
+      this.addWidget(widgetInfo);
     },
     getPictures: function () {
       const pictures = [];
@@ -166,32 +162,28 @@ export default {
             );
           }
         });
-      const widget = {
-        widgetType: {
-          componentName: "Pictures",
-          configurable: true,
-          materialIcon: "image",
-          title: "Images",
-          subtitle: this.picturesPrompt.search,
-          properties: {
-            pictures,
-            nbPictures: 3,
-          },
+      const widgetInfo = {
+        componentName: "Pictures",
+        configurable: true,
+        materialIcon: "image",
+        title: "Images",
+        subtitle: this.picturesPrompt.search,
+        properties: {
+          pictures,
+          nbPictures: 3,
         },
       };
-      this.widgets.push(widget);
+      this.addWidget(widgetInfo);
       this.picturesPrompt.search = "";
     },
     getMichelBillaudTwitter: function () {
-      const widget = {
-        widgetType: {
-          componentName: "MichelBillaudTwitter",
-          materialIcon: "person",
-          configurable: false,
-          title: "@MichelBillaud",
-        },
+      const widgetInfo = {
+        componentName: "MichelBillaudTwitter",
+        materialIcon: "person",
+        configurable: false,
+        title: "@MichelBillaud",
       };
-      this.widgets.push(widget);
+      this.addWidget(widgetInfo);
     },
     getNews: function () {
       axios
@@ -199,8 +191,7 @@ export default {
           `https://newsapi.org/v2/everything?q=${this.newsPrompt.search}&apiKey=d8567e8a076140a08c7ee9d4a2d459fa`
         )
         .then((response) => {
-          const widget = {
-            widgetType: {
+          const widgetInfo = {
               componentName: "News",
               configurable: false,
               materialIcon: "article",
@@ -209,23 +200,22 @@ export default {
               properties: {
                 articles: response.data.articles,
               },
-            },
           };
-          this.widgets.push(widget);
+          this.addWidget(widgetInfo);
           this.newsPrompt.search = "";
         });
     },
-    addWidget: function (widget) {
+    addWidget: function (widgetInfo) {
       const nbWidget = this.widgets.length;
-      const widg = {
-        widget,
+      const widget = {
+        widgetInfo,
         x: nbWidget % 4,
-        y: Math.floor(nbWidget / 4),
+        y: Math.floor(nbWidget / 4) * 2,
         w: 1,
-        h: 1,
+        h: 2,
         i: nbWidget,
       };
-      this.widgets.push(widg)
+      this.widgets.push(widget);
     },
   },
   watch: {

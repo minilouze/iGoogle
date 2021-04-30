@@ -1,32 +1,31 @@
 <template>
-  <div>
-    <grid-layout
-      :layout.sync="widgets"
-      :col-num="4"
-      :is-draggable="draggable"
-      :is-resizable="resizable"
-      :vertical-compact="true"
-      :use-css-transforms="true"
+  <grid-layout
+    :layout.sync="widgets"
+    :col-num="4"
+    :is-draggable="true"
+    :is-resizable="true"
+    
+    :vertical-compact="true"
+    :use-css-transforms="true"
+  >
+    <grid-item
+      v-for="widget in widgets"
+      :key="widget.i"
+      :x="widget.x"
+      :y="widget.y"
+      :w="widget.w"
+      :h="widget.h"
+      :i="widget.i"
+      :static="false"
+      @moved="movedEvent"
     >
-      <grid-item
-        v-for="item in widgets"
-        :key="item.i"
-        :x="item.x"
-        :y="item.y"
-        :w="item.w"
-        :h="item.h"
-        :i="item.i"
-        :static="false"
-        @moved="movedEvent"
-      >
-        <widget
-          :themeColor="themeColor"
-          :widgetType="item.widget.widgetType"
-          @deleteWidget="deleteWidget"
-        />
-      </grid-item>
-    </grid-layout>
-  </div>
+      <widget
+        :themeColor="themeColor"
+        :widgetInfo="widget.widgetInfo"
+        @deleteWidget="deleteWidget"
+      />
+    </grid-item>
+  </grid-layout>
 </template>
 
 <script>
@@ -40,14 +39,6 @@ export default {
     Widget,
     GridLayout,
     GridItem,
-  },
-  data() {
-    return {
-      draggable: true,
-      resizable: true,
-      responsive: true,
-      index: 0,
-    };
   },
   methods: {
     deleteWidget: function (index) {

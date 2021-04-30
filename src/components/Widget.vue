@@ -1,22 +1,33 @@
 <template>
   <md-card md-with-hover>
     <md-card-header>
-      <md-icon :style="{ color: themeColor }">{{ widgetType.materialIcon }}</md-icon>
-      <div class="md-title">{{ widgetType.title }}</div>
-      <div v-if="widgetType.subtitle" class="md-subhead">{{ widgetType.subtitle }}</div>
+      <md-icon :style="{ color: themeColor }">{{
+        widgetInfo.materialIcon
+      }}</md-icon>
+      <div class="md-title">{{ widgetInfo.title }}</div>
+      <div v-if="widgetInfo.subtitle" class="md-subhead">
+        {{ widgetInfo.subtitle }}
+      </div>
     </md-card-header>
 
     <md-card-content>
-      <component :is="widgetType.componentName" :properties="widgetType.properties"/>
+      <component
+        :is="widgetInfo.componentName"
+        :properties="widgetInfo.properties"
+      />
     </md-card-content>
 
     <md-card-actions>
-      <md-button v-if="widgetType.configurable" class="md-icon-button md-raised">
+      <md-button
+        v-if="widgetInfo.configurable"
+        class="md-icon-button md-raised"
+      >
         <md-icon>settings</md-icon>
       </md-button>
       <md-button
         @click="deleteWidget"
-        class="md-icon-button md-raised md-accent">
+        class="md-icon-button md-raised md-accent"
+      >
         <md-icon>delete</md-icon>
       </md-button>
     </md-card-actions>
@@ -24,7 +35,6 @@
 </template>
 
 <script>
-
 import Weather from "./Widgets/Weather";
 import Clock from "./Widgets/Clock";
 import Pictures from "./Widgets/Pictures";
@@ -33,13 +43,13 @@ import News from "./Widgets/News";
 
 export default {
   name: "Widget",
-  props: ["id", "widgetType", "themeColor"],
+  props: ["id", "widgetInfo", "themeColor"],
   components: {
     Weather,
     Clock,
     Pictures,
     MichelBillaudTwitter,
-    News
+    News,
   },
   methods: {
     deleteWidget: function () {
@@ -54,6 +64,9 @@ export default {
 .md-card {
   display: inline-flex;
   flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
   .md-card-content {
     display: flex;
     justify-content: center;
@@ -64,5 +77,8 @@ export default {
       margin-left: 1rem;
     }
   }
+}
+.vue-resizable-handle {
+  z-index: 9;
 }
 </style>
