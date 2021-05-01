@@ -7,7 +7,11 @@
       <InputColorPicker v-model="themeColor" />
       <Menu></Menu>
     </div>
-    <WidgetsList :widgets="widgets" :themeColor="themeColor"></WidgetsList>
+    <WidgetsList
+      :widgets="widgets"
+      :themeColor="themeColor"
+      @deleteWidgetFromSource="deleteWidgetFromSource"
+    ></WidgetsList>
 
     <md-speed-dial id="add-widget">
       <md-speed-dial-target class="md-primary">
@@ -135,6 +139,7 @@ export default {
     },
     getClock: function () {
       const widgetInfo = {
+        id: this.widgets.length,
         componentName: "Clock",
         materialIcon: "schedule",
         configurable: false,
@@ -192,30 +197,25 @@ export default {
         )
         .then((response) => {
           const widgetInfo = {
-              componentName: "News",
-              configurable: false,
-              materialIcon: "article",
-              title: "News",
-              subtitle: this.newsPrompt.search,
-              properties: {
-                articles: response.data.articles,
-              },
+            componentName: "News",
+            configurable: false,
+            materialIcon: "article",
+            title: "News",
+            subtitle: this.newsPrompt.search,
+            properties: {
+              articles: response.data.articles,
+            },
           };
           this.addWidget(widgetInfo);
           this.newsPrompt.search = "";
         });
     },
     addWidget: function (widgetInfo) {
-      const nbWidget = this.widgets.length;
-      const widget = {
-        widgetInfo,
-        x: nbWidget % 4,
-        y: Math.floor(nbWidget / 4) * 2,
-        w: 1,
-        h: 2,
-        i: nbWidget,
-      };
-      this.widgets.push(widget);
+      this.widgets.push(widgetInfo);
+    },
+    deleteWidgetFromSource: function (id) {
+      const index = this.widgets.map((widget) => widget.id).indexOf(id);
+      this.widgets.splice(index, 1);
     },
   },
   watch: {

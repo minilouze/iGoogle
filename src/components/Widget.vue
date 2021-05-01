@@ -43,7 +43,7 @@ import News from "./Widgets/News";
 
 export default {
   name: "Widget",
-  props: ["id", "widgetInfo", "themeColor"],
+  props: ["widgetInfo", "themeColor"],
   components: {
     Weather,
     Clock,
@@ -53,7 +53,7 @@ export default {
   },
   methods: {
     deleteWidget: function () {
-      this.$emit("deleteWidget", this.id);
+      this.$emit("deleteWidget", this.widgetInfo.id);
     },
   },
 };
