@@ -9,7 +9,7 @@
     </div>
     <WidgetsList :widgets="widgets" :themeColor="themeColor"></WidgetsList>
 
-    <md-speed-dial :class="rightPosition" id="add-widget">
+    <md-speed-dial id="add-widget">
       <md-speed-dial-target class="md-primary">
         <md-icon>add</md-icon>
       </md-speed-dial-target>
