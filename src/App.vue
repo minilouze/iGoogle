@@ -1,9 +1,6 @@
 <template>
   <div id="app">
     <div id="topBar">
-      <!-- <md-button class="md-icon-button md-raised" id="color-picker">
-      <md-icon>colorize</md-icon>
-    </md-button> -->
       <InputColorPicker v-model="themeColor" />
       <Menu></Menu>
     </div>
@@ -13,204 +10,60 @@
       @deleteWidgetFromSource="deleteWidgetFromSource"
     ></WidgetsList>
 
-    <md-speed-dial id="add-widget">
-      <md-speed-dial-target class="md-primary">
-        <md-icon>add</md-icon>
-      </md-speed-dial-target>
+    <WidgetsAdder
+      :input="promptInput"
+      :trigger="trigger"
+      @widgetDataReceived="addWidget"
+      @onPromptAsked="openPrompt"
+    ></WidgetsAdder>
 
-      <md-speed-dial-content>
-        <md-button class="md-icon-button" @click="getMichelBillaudTwitter()">
-          <md-icon>person</md-icon>
-        </md-button>
-        <md-button class="md-icon-button" @click="openNewsPrompt()">
-          <md-icon>article</md-icon>
-        </md-button>
-        <md-button class="md-icon-button" @click="openPicturesPrompt()">
-          <md-icon>image</md-icon>
-        </md-button>
-        <md-button class="md-icon-button" @click="openWeatherPrompt()">
-          <md-icon>thermostat</md-icon>
-        </md-button>
-        <md-button class="md-icon-button" @click="getClock()">
-          <md-icon>schedule</md-icon>
-        </md-button>
-      </md-speed-dial-content>
-    </md-speed-dial>
-
-    <md-dialog-prompt
-      :md-active.sync="weatherPrompt.active"
-      v-model="weatherPrompt.city"
-      md-title="Pour quelle ville souhaitez-vous la météo ?"
-      md-input-maxlength="30"
-      md-input-placeholder="Écrivez le nom de la ville..."
-      md-cancel-text="Annuler"
-      md-confirm-text="Valider"
-      @md-confirm="getWeather"
-    />
-
-    <md-dialog-prompt
-      :md-active.sync="picturesPrompt.active"
-      v-model="picturesPrompt.search"
-      md-title="Quelles images souhaitez-vous ?"
-      md-input-maxlength="30"
-      md-input-placeholder="Écrivez vos mots-clés..."
-      md-cancel-text="Annuler"
-      md-confirm-text="Valider"
-      @md-confirm="getPictures"
-    />
-
-    <md-dialog-prompt
-      :md-active.sync="newsPrompt.active"
-      v-model="newsPrompt.search"
-      md-title="Quelles informations recherchez-vous ?"
-      md-input-maxlength="30"
-      md-input-placeholder="Écrivez vos mots-clés..."
-      md-cancel-text="Annuler"
-      md-confirm-text="Valider"
-      @md-confirm="getNews"
-    />
+    <PromptsManager
+    :widgetType="promptWidgetType"
+    :active="promptOpened"
+    @onConfirm="sendPromptInput"></PromptsManager>
   </div>
 </template>
 
 <script>
-import Menu from "./components/Menu.vue";
-import WidgetsList from "./components/WidgetsList.vue";
-import axios from "axios";
+import Menu from "./components/Menu";
+import WidgetsAdder from "./components/WidgetsAdder";
+import WidgetsList from "./components/WidgetsList";
 import InputColorPicker from "vue-native-color-picker";
+import WidgetTypes from "./widgetTypes";
+import PromptsManager from './components/Widgets/PromptsManager.vue';
 
 export default {
   name: "App",
   data: () => ({
     widgets: [],
-    bottomPosition: null,
-    weatherPrompt: {
-      active: false,
-      city: "",
-    },
-    picturesPrompt: {
-      active: false,
-      search: "",
-    },
-    newsPrompt: {
-      active: false,
-      search: "",
-    },
+    trigger: false,
+    promptWidgetType: 0,
+    promptOpened : false,
+    promptInput: "",
     themeColor: "#448aff",
   }),
   components: {
     Menu,
     WidgetsList,
     InputColorPicker,
+    WidgetsAdder,
+    PromptsManager,
   },
   methods: {
-    openWeatherPrompt: function () {
-      this.weatherPrompt.active = true;
+    openPrompt: function (widgetType) {
+      console.log(widgetType);
+      this.promptWidgetType = widgetType;
+      switch (widgetType) {
+        case WidgetTypes.WEATHER:
+          this.promptOpened = true;
+          break;
+      }
     },
-    openPicturesPrompt: function () {
-      this.picturesPrompt.active = true;
-    },
-    openNewsPrompt: function () {
-      this.newsPrompt.active = true;
-    },
-    getWeather: function () {
-      axios
-        // .get(
-        //   "http://api.weatherstack.com/current?access_key=8a3910f661c45e015711823eb5df116a&query=fetch:ip"
-        // )
-        .get(
-          `http://api.weatherstack.com/current?access_key=8a3910f661c45e015711823eb5df116a&query=${this.weatherPrompt.city}`
-        )
-        .then((response) => {
-          const data = response.data;
-          const widgetInfo = {
-            componentName: "Weather",
-            configurable: true,
-            materialIcon: "thermostat",
-            title: "Météo",
-            subtitle: data.location.name,
-            properties: {
-              temperature: data.current.temperature,
-              icon: data.current.weather_icons[0],
-            },
-          };
-          this.addWidget(widgetInfo);
-          this.weatherPrompt.city = "";
-        });
-    },
-    getClock: function () {
-      const widgetInfo = {
-        id: this.widgets.length,
-        componentName: "Clock",
-        materialIcon: "schedule",
-        configurable: false,
-        title: "Date/Heure",
-      };
-      this.addWidget(widgetInfo);
-    },
-    getPictures: function () {
-      const pictures = [];
-      axios
-        .get(
-          `https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=4c961240fea7a5205c865fd44e0152af&text=${this.picturesPrompt.search}`
-        )
-        .then((response) => {
-          response = new DOMParser().parseFromString(
-            response.data,
-            "application/xml"
-          );
-          for (let photo of response.getElementsByTagName("photo")) {
-            const serverId = photo.getAttribute("server");
-            const id = photo.getAttribute("id");
-            const secret = photo.getAttribute("secret");
-            pictures.push(
-              `https://live.staticflickr.com/${serverId}/${id}_${secret}_s.jpg`
-            );
-          }
-        });
-      const widgetInfo = {
-        componentName: "Pictures",
-        configurable: true,
-        materialIcon: "image",
-        title: "Images",
-        subtitle: this.picturesPrompt.search,
-        properties: {
-          pictures,
-          nbPictures: 3,
-        },
-      };
-      this.addWidget(widgetInfo);
-      this.picturesPrompt.search = "";
-    },
-    getMichelBillaudTwitter: function () {
-      const widgetInfo = {
-        componentName: "MichelBillaudTwitter",
-        materialIcon: "person",
-        configurable: false,
-        title: "@MichelBillaud",
-      };
-      this.addWidget(widgetInfo);
-    },
-    getNews: function () {
-      axios
-        .get(
-          `https://newsapi.org/v2/everything?q=${this.newsPrompt.search}&apiKey=d8567e8a076140a08c7ee9d4a2d459fa`
-        )
-        .then((response) => {
-          const widgetInfo = {
-            componentName: "News",
-            configurable: false,
-            materialIcon: "article",
-            title: "News",
-            subtitle: this.newsPrompt.search,
-            properties: {
-              articles: response.data.articles,
-            },
-          };
-          this.addWidget(widgetInfo);
-          this.newsPrompt.search = "";
-        });
+    sendPromptInput: function () {
+      this.trigger = !this.trigger;
     },
     addWidget: function (widgetInfo) {
+      widgetInfo.id = this.widgets.length,
       this.widgets.push(widgetInfo);
     },
     deleteWidgetFromSource: function (id) {
