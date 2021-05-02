@@ -46,6 +46,7 @@ export default {
     bus: new Vue(),
     hasWidgetError: false,
     themeColor: "#448aff",
+    isRootLoaded: false
   }),
   components: {
     Menu,
@@ -53,6 +54,11 @@ export default {
     InputColorPicker,
     WidgetsAdder,
     PromptsManager,
+  },
+  mounted: function() {
+    if(localStorage.themeColor) {
+      this.themeColor = localStorage.themeColor
+    }
   },
   methods: {
     openPrompt: function (widgetType) {
@@ -75,6 +81,7 @@ export default {
         "--md-theme-default-primary",
         color
       );
+      localStorage.themeColor = color;
     },
   },
 };
