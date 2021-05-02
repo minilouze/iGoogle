@@ -8,6 +8,7 @@
       :responsive="responsive"
       :vertical-compact="true"
       :use-css-transforms="true"
+      @layout-updated="layoutUpdatedEvent"
     >
       <grid-item
         v-for="widget in layout"
@@ -43,6 +44,7 @@ export default {
       resizable: true,
       responsive: true,
       colNum: 12,
+      loadFromLocalStorage: typeof localStorage.layout !== "undefined"
     };
   },
   components: {
@@ -53,17 +55,23 @@ export default {
   watch: {
     // Synchoniser la liste des widgets
     widgets: function () {
-      const newWidgets = this.widgets.filter(
-        (widget) => !this.layout.some((w) => w.i === widget.id)
-      );
-      const deletedWidgets = this.layout.filter(
-        (widget) => !this.widgets.some((w) => w.id === widget.i)
-      );
-      for (const newWidget of newWidgets) {
-        this.addWidget(newWidget);
-      }
-      for (const deletedWidget of deletedWidgets) {
-        this.deleteWidget(deletedWidget.i);
+      if (this.loadFromLocalStorage) {
+        const layoutInStorage = JSON.parse(localStorage.layout)
+        this.layout = layoutInStorage;
+        this.loadFromLocalStorage = false;
+      } else {
+        const newWidgets = this.widgets.filter(
+          (widget) => !this.layout.some((w) => w.i === widget.id)
+        );
+        const deletedWidgets = this.layout.filter(
+          (widget) => !this.widgets.some((w) => w.id === widget.i)
+        );
+        for (const newWidget of newWidgets) {
+          this.addWidget(newWidget);
+        }
+        for (const deletedWidget of deletedWidgets) {
+          this.deleteWidget(deletedWidget.i);
+        }
       }
     },
   },
@@ -86,12 +94,17 @@ export default {
     deleteWidgetFromSource: function (id) {
       this.$emit("deleteWidgetFromSource", id);
     },
+    layoutUpdatedEvent: function (newLayout) {
+      if (typeof newLayout !== "undefined" && newLayout.length > 0) {
+        localStorage.layout = JSON.stringify(newLayout);
+      }
+    },
   },
 };
 </script>
 
 <style scoped>
-  #gridContainer {
-    padding-right: 62px;
-  }
+#gridContainer {
+  padding-right: 62px;
+}
 </style>

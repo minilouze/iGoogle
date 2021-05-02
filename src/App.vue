@@ -46,7 +46,6 @@ export default {
     bus: new Vue(),
     hasWidgetError: false,
     themeColor: "#448aff",
-    isRootLoaded: false
   }),
   components: {
     Menu,
@@ -55,9 +54,16 @@ export default {
     WidgetsAdder,
     PromptsManager,
   },
-  mounted: function() {
-    if(localStorage.themeColor) {
-      this.themeColor = localStorage.themeColor
+  mounted: function () {
+    if (localStorage.themeColor) {
+      this.themeColor = localStorage.themeColor;
+    }
+    if (localStorage.layout) {
+      try {
+        this.widgets = JSON.parse(localStorage.layout).map(widget => widget.widgetInfo);
+      } catch (e) {
+        localStorage.removeItem("layout");
+      }
     }
   },
   methods: {
