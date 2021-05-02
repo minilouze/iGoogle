@@ -67,15 +67,23 @@ export default {
   justify-content: space-between;
   width: 100%;
   height: 100%;
+  .md-card-header {
+    height: 88px;
+  }
   .md-card-content {
     display: flex;
     justify-content: center;
     align-items: center;
+    height: calc(100% - 88px - 56px);
+    overflow: auto;
     .temperature {
       font-size: 2rem;
       line-height: 2rem;
       margin-left: 1rem;
     }
+  }
+  .md-card-actions {
+    height: 56px;
   }
 }
 .vue-resizable-handle {
