@@ -88,17 +88,18 @@ export default {
   text-align: center;
   color: #2c3e50;
   height: 100vh;
-  padding: 1rem;
+  padding: 2rem;
   position: relative;
   #topBar {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 0 10px;
   }
   #add-widget {
     position: fixed;
-    right: 1rem;
-    bottom: 1rem;
+    right: 2rem;
+    bottom: 2rem;
   }
 }
 </style>

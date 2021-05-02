@@ -1,30 +1,32 @@
 <template>
-  <grid-layout
-    :layout.sync="layout"
-    :col-num="colNum"
-    :is-draggable="draggable"
-    :is-resizable="resizable"
-    :responsive="responsive"
-    :vertical-compact="true"
-    :use-css-transforms="true"
-  >
-    <grid-item
-      v-for="widget in layout"
-      :key="widget.i"
-      :x="widget.x"
-      :y="widget.y"
-      :w="widget.w"
-      :h="widget.h"
-      :i="widget.i"
-      :static="false"
+  <div id="gridContainer">
+    <grid-layout
+      :layout.sync="layout"
+      :col-num="colNum"
+      :is-draggable="draggable"
+      :is-resizable="resizable"
+      :responsive="responsive"
+      :vertical-compact="true"
+      :use-css-transforms="true"
     >
-      <widget
-        :themeColor="themeColor"
-        :widgetInfo="widget.widgetInfo"
-        @deleteWidget="deleteWidgetFromSource"
-      />
-    </grid-item>
-  </grid-layout>
+      <grid-item
+        v-for="widget in layout"
+        :key="widget.i"
+        :x="widget.x"
+        :y="widget.y"
+        :w="widget.w"
+        :h="widget.h"
+        :i="widget.i"
+        :static="false"
+      >
+        <widget
+          :themeColor="themeColor"
+          :widgetInfo="widget.widgetInfo"
+          @deleteWidget="deleteWidgetFromSource"
+        />
+      </grid-item>
+    </grid-layout>
+  </div>
 </template>
 
 <script>
@@ -41,7 +43,7 @@ export default {
       resizable: true,
       responsive: true,
       colNum: 12,
-    }
+    };
   },
   components: {
     Widget,
@@ -49,18 +51,21 @@ export default {
     GridItem,
   },
   watch: {
-
     // Synchoniser la liste des widgets
-    widgets: function() {
-      const newWidgets = this.widgets.filter(widget => !this.layout.some(w => w.i === widget.id));
-      const deletedWidgets = this.layout.filter(widget => !this.widgets.some(w => w.id === widget.i));
+    widgets: function () {
+      const newWidgets = this.widgets.filter(
+        (widget) => !this.layout.some((w) => w.i === widget.id)
+      );
+      const deletedWidgets = this.layout.filter(
+        (widget) => !this.widgets.some((w) => w.id === widget.i)
+      );
       for (const newWidget of newWidgets) {
         this.addWidget(newWidget);
       }
       for (const deletedWidget of deletedWidgets) {
         this.deleteWidget(deletedWidget.i);
       }
-    }
+    },
   },
   methods: {
     addWidget: function (widget) {
@@ -70,20 +75,23 @@ export default {
         w: 2,
         h: 2,
         i: widget.id,
-        widgetInfo: widget
+        widgetInfo: widget,
       });
       this.index++;
     },
     deleteWidget: function (id) {
-      const index = this.layout.map(widget => widget.i).indexOf(id);
+      const index = this.layout.map((widget) => widget.i).indexOf(id);
       this.layout.splice(index, 1);
     },
-    deleteWidgetFromSource: function(id) {
+    deleteWidgetFromSource: function (id) {
       this.$emit("deleteWidgetFromSource", id);
-    }
+    },
   },
 };
 </script>
 
 <style scoped>
+  #gridContainer {
+    padding-right: 62px;
+  }
 </style>
