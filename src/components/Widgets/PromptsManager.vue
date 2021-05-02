@@ -1,35 +1,39 @@
 <template>
   <md-dialog-prompt
-    :md-active.sync="opened"
+    :md-active.sync="active"
     v-model="input"
     :md-title="title"
     md-input-maxlength="30"
-    :md-input-placeholder="title"
+    :md-input-placeholder="placeholder"
     md-cancel-text="Annuler"
     md-confirm-text="Valider"
     @md-confirm="confirm"
+    @md-cancel="cancel"
   />
 </template>
 
 <script>
+import Vue from 'vue';
 import WidgetTypes from "../../widgetTypes";
 
 export default {
   props: {
-    widgetType: Number,
-    active: Boolean,
-    input: String,
-    title: String,
-    placeholder: String,
+    bus: Vue,
   },
   data() {
     return {
-      opened: this.active
+      active: false,
+      title: "",
+      placeholder: "",
+      input: null,
     };
   },
-  watch: {
-    widgetType: function () {
-      switch (this.widgetType) {
+  mounted() {
+    this.bus.$on('onAskedPrompt', this.openPrompt)
+  },
+  methods: {
+    openPrompt(widgetType) {
+      switch (widgetType) {
         case WidgetTypes.WEATHER:
           this.title = "Pour quelle ville souhaitez-vous la météo ?";
           this.placeholder = "Écrivez le nom de la ville...";
@@ -43,14 +47,16 @@ export default {
           this.placeholder = "Écrivez vos mots-clés...";
           break;
       }
+      this.active = true;
     },
-    active: function() {
-        this.opened = this.active;
-    }
-  },
-  methods: {
     confirm: function () {
-      this.$emit("onConfirm", this.input);
+      const val = this.input;
+      this.input = "";
+      this.$emit("onConfirm", val);
+    },
+    cancel: function() {
+      this.input = "";
+      this.$emit("onCancel");
     },
   },
 };

@@ -11,16 +11,21 @@
     ></WidgetsList>
 
     <WidgetsAdder
-      :input="promptInput"
-      :trigger="trigger"
+      :bus="bus"
       @widgetDataReceived="addWidget"
-      @onPromptAsked="openPrompt"
+      @onAskedPrompt="openPrompt"
+      @onError="hasWidgetError = true"
     ></WidgetsAdder>
 
     <PromptsManager
-    :widgetType="promptWidgetType"
-    :active="promptOpened"
-    @onConfirm="sendPromptInput"></PromptsManager>
+    :bus="bus"
+    @onConfirm="requestData"
+    @onCancel="promptOpened = false"></PromptsManager>
+
+    <md-dialog-alert
+      :md-active.sync="hasWidgetError"
+      md-content="Désolé, ce widget n'est pas disponible pour le moment &#128533;"
+      md-confirm-text="Pas grave" />
   </div>
 </template>
 
@@ -29,17 +34,15 @@ import Menu from "./components/Menu";
 import WidgetsAdder from "./components/WidgetsAdder";
 import WidgetsList from "./components/WidgetsList";
 import InputColorPicker from "vue-native-color-picker";
-import WidgetTypes from "./widgetTypes";
 import PromptsManager from './components/Widgets/PromptsManager.vue';
+import Vue from 'vue';
 
 export default {
   name: "App",
   data: () => ({
     widgets: [],
-    trigger: false,
-    promptWidgetType: 0,
-    promptOpened : false,
-    promptInput: "",
+    bus: new Vue(),
+    hasWidgetError: false,
     themeColor: "#448aff",
   }),
   components: {
@@ -51,16 +54,10 @@ export default {
   },
   methods: {
     openPrompt: function (widgetType) {
-      console.log(widgetType);
-      this.promptWidgetType = widgetType;
-      switch (widgetType) {
-        case WidgetTypes.WEATHER:
-          this.promptOpened = true;
-          break;
-      }
+      this.bus.$emit("onAskedPrompt", widgetType);
     },
-    sendPromptInput: function () {
-      this.trigger = !this.trigger;
+    requestData: function(input) {
+      this.bus.$emit("onRequestedData", input);
     },
     addWidget: function (widgetInfo) {
       widgetInfo.id = this.widgets.length,

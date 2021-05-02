@@ -1,3 +1,5 @@
 export default Object.freeze({
-    WEATHER: 0
-  })
+    WEATHER: 1,
+    PICTURES: 2,
+    NEWS: 3
+  });

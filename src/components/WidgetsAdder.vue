@@ -8,13 +8,13 @@
       <md-button class="md-icon-button" @click="getMichelBillaudTwitter()">
         <md-icon>person</md-icon>
       </md-button>
-      <md-button class="md-icon-button" @click="openNewsPrompt()">
+      <md-button class="md-icon-button" @click="openPrompt(widgetTypes.NEWS)">
         <md-icon>article</md-icon>
       </md-button>
-      <md-button class="md-icon-button" @click="openPicturesPrompt()">
+      <md-button class="md-icon-button" @click="openPrompt(widgetTypes.PICTURES)">
         <md-icon>image</md-icon>
       </md-button>
-      <md-button class="md-icon-button" @click="openWeatherPrompt()">
+      <md-button class="md-icon-button" @click="openPrompt(widgetTypes.WEATHER)">
         <md-icon>thermostat</md-icon>
       </md-button>
       <md-button class="md-icon-button" @click="getClock()">
@@ -27,33 +27,38 @@
 <script>
 import axios from "axios";
 import WidgetTypes from "../widgetTypes";
+import Vue from 'vue';
 
 export default {
   props: {
     input: String,
-    trigger: Boolean,
+    bus: Vue
+    // requestData: Boolean,
   },
-  watch: {
-    trigger: function() {
-        this.getWeather();
-    },
+  data() {
+    return {
+      widgetTypes: WidgetTypes
+    }
   },
+  // watch: {
+  //   requestData: function() {
+  //       this.getWeather();
+  //   },
+  // },
+  mounted() {
+    this.bus.$on('onRequestedData', this.getWeather)
+  }, 
   methods: {
-    openWeatherPrompt: function () {
-      this.$emit("onPromptAsked", WidgetTypes.WEATHER);
+    openPrompt: function (widgetType) {
+      this.$emit("onAskedPrompt", widgetType);
     },
-    openPicturesPrompt: function () {
-      this.picturesPrompt.active = true;
-    },
-    openNewsPrompt: function () {
-      this.newsPrompt.active = true;
-    },
-    getWeather: function () {
+    getWeather: function (input) {
+      console.log(input);
       axios
         .get(
           `http://api.weatherstack.com/current?access_key=8a3910f661c45e015711823eb5df116a&query=${this.input}`
         )
-        .then((response) => {
+        .then(response => {
           const data = response.data;
           const widgetInfo = {
             componentName: "Weather",
@@ -67,6 +72,9 @@ export default {
             },
           };
           this.$emit("widgetDataReceived", widgetInfo);
+        }).catch((e) => {
+          console.error(e);
+          this.$emit("onError");
         });
     },
     getClock: function () {
