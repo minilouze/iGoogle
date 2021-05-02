@@ -5,7 +5,6 @@
     >Tweets by MichelBillaud</a
   >
 </template>
-
 <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 <script>
 export default {

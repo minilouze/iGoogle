@@ -55,12 +55,15 @@ export default {
     PromptsManager,
   },
   mounted: function () {
+    this.loadTwitterScript();
     if (localStorage.themeColor) {
       this.themeColor = localStorage.themeColor;
     }
     if (localStorage.layout) {
       try {
-        this.widgets = JSON.parse(localStorage.layout).map(widget => widget.widgetInfo);
+        this.widgets = JSON.parse(localStorage.layout).map(
+          (widget) => widget.widgetInfo
+        );
       } catch (e) {
         localStorage.removeItem("layout");
       }
@@ -79,6 +82,12 @@ export default {
     deleteWidget: function (id) {
       const index = this.widgets.map((widget) => widget.id).indexOf(id);
       this.widgets.splice(index, 1);
+    },
+    loadTwitterScript() {
+      let script = document.createElement("script");
+      script.setAttribute("src", "https://platform.twitter.com/widgets.js");
+      script.setAttribute("charset", "utf-8");
+      document.head.appendChild(script);
     },
   },
   watch: {
