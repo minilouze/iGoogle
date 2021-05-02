@@ -7,25 +7,27 @@
     <WidgetsList
       :widgets="widgets"
       :themeColor="themeColor"
-      @deleteWidgetFromSource="deleteWidgetFromSource"
+      @deleteWidgetFromSource="deleteWidget"
     ></WidgetsList>
 
     <WidgetsAdder
       :bus="bus"
-      @widgetDataReceived="addWidget"
+      @onReceivedDataWidget="addWidget"
       @onAskedPrompt="openPrompt"
       @onError="hasWidgetError = true"
     ></WidgetsAdder>
 
     <PromptsManager
-    :bus="bus"
-    @onConfirm="requestData"
-    @onCancel="promptOpened = false"></PromptsManager>
+      :bus="bus"
+      @onConfirm="requestData"
+      @onCancel="promptOpened = false"
+    ></PromptsManager>
 
     <md-dialog-alert
       :md-active.sync="hasWidgetError"
       md-content="Désolé, ce widget n'est pas disponible pour le moment &#128533;"
-      md-confirm-text="Pas grave" />
+      md-confirm-text="Pas grave"
+    />
   </div>
 </template>
 
@@ -34,8 +36,8 @@ import Menu from "./components/Menu";
 import WidgetsAdder from "./components/WidgetsAdder";
 import WidgetsList from "./components/WidgetsList";
 import InputColorPicker from "vue-native-color-picker";
-import PromptsManager from './components/Widgets/PromptsManager.vue';
-import Vue from 'vue';
+import PromptsManager from "./components/Widgets/PromptsManager.vue";
+import Vue from "vue";
 
 export default {
   name: "App",
@@ -56,14 +58,13 @@ export default {
     openPrompt: function (widgetType) {
       this.bus.$emit("onAskedPrompt", widgetType);
     },
-    requestData: function(input) {
-      this.bus.$emit("onRequestedData", input);
+    requestData: function (request) {
+      this.bus.$emit("onRequestedData", request);
     },
     addWidget: function (widgetInfo) {
-      widgetInfo.id = this.widgets.length,
-      this.widgets.push(widgetInfo);
+      (widgetInfo.id = this.widgets.length), this.widgets.push(widgetInfo);
     },
-    deleteWidgetFromSource: function (id) {
+    deleteWidget: function (id) {
       const index = this.widgets.map((widget) => widget.id).indexOf(id);
       this.widgets.splice(index, 1);
     },

@@ -22,6 +22,7 @@ export default {
   },
   data() {
     return {
+      widgetType: null,
       active: false,
       title: "",
       placeholder: "",
@@ -33,7 +34,8 @@ export default {
   },
   methods: {
     openPrompt(widgetType) {
-      switch (widgetType) {
+      this.widgetType = widgetType;
+      switch (this.widgetType) {
         case WidgetTypes.WEATHER:
           this.title = "Pour quelle ville souhaitez-vous la météo ?";
           this.placeholder = "Écrivez le nom de la ville...";
@@ -50,9 +52,8 @@ export default {
       this.active = true;
     },
     confirm: function () {
-      const val = this.input;
+      this.$emit("onConfirm", {widgetType: this.widgetType, input: this.input});
       this.input = "";
-      this.$emit("onConfirm", val);
     },
     cancel: function() {
       this.input = "";

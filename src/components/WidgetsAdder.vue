@@ -5,19 +5,33 @@
     </md-speed-dial-target>
 
     <md-speed-dial-content>
-      <md-button class="md-icon-button" @click="getMichelBillaudTwitter()">
+      <md-button
+        class="md-icon-button"
+        @click="
+          getWidgetData({ widgetType: widgetTypes.MICHEL_BILLAUD_TWITTER })
+        "
+      >
         <md-icon>person</md-icon>
       </md-button>
       <md-button class="md-icon-button" @click="openPrompt(widgetTypes.NEWS)">
         <md-icon>article</md-icon>
       </md-button>
-      <md-button class="md-icon-button" @click="openPrompt(widgetTypes.PICTURES)">
+      <md-button
+        class="md-icon-button"
+        @click="openPrompt(widgetTypes.PICTURES)"
+      >
         <md-icon>image</md-icon>
       </md-button>
-      <md-button class="md-icon-button" @click="openPrompt(widgetTypes.WEATHER)">
+      <md-button
+        class="md-icon-button"
+        @click="openPrompt(widgetTypes.WEATHER)"
+      >
         <md-icon>thermostat</md-icon>
       </md-button>
-      <md-button class="md-icon-button" @click="getClock()">
+      <md-button
+        class="md-icon-button"
+        @click="getWidgetData({ widgetType: widgetTypes.CLOCK })"
+      >
         <md-icon>schedule</md-icon>
       </md-button>
     </md-speed-dial-content>
@@ -27,127 +41,85 @@
 <script>
 import axios from "axios";
 import WidgetTypes from "../widgetTypes";
-import Vue from 'vue';
+import Widget from "../widget";
+import Vue from "vue";
 
 export default {
   props: {
     input: String,
-    bus: Vue
-    // requestData: Boolean,
+    bus: Vue,
   },
   data() {
     return {
-      widgetTypes: WidgetTypes
-    }
+      widgetTypes: WidgetTypes,
+    };
   },
-  // watch: {
-  //   requestData: function() {
-  //       this.getWeather();
-  //   },
-  // },
   mounted() {
-    this.bus.$on('onRequestedData', this.getWeather)
-  }, 
+    this.bus.$on("onRequestedData", this.getWidgetData);
+  },
   methods: {
     openPrompt: function (widgetType) {
       this.$emit("onAskedPrompt", widgetType);
     },
-    getWeather: function (input) {
-      console.log(input);
-      axios
-        .get(
-          `http://api.weatherstack.com/current?access_key=8a3910f661c45e015711823eb5df116a&query=${this.input}`
-        )
-        .then(response => {
-          const data = response.data;
-          const widgetInfo = {
-            componentName: "Weather",
-            configurable: true,
-            materialIcon: "thermostat",
-            title: "Météo",
-            subtitle: data.location.name,
-            properties: {
-              temperature: data.current.temperature,
-              icon: data.current.weather_icons[0],
-            },
-          };
-          this.$emit("widgetDataReceived", widgetInfo);
-        }).catch((e) => {
-          console.error(e);
-          this.$emit("onError");
-        });
-    },
-    getClock: function () {
-      const widgetInfo = {
-        componentName: "Clock",
-        materialIcon: "schedule",
-        configurable: false,
-        title: "Date/Heure",
-      };
-      this.$emit("widgetDataReceived", widgetInfo);
-    },
-    getPictures: function () {
-      const pictures = [];
-      axios
-        .get(
-          `https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=4c961240fea7a5205c865fd44e0152af&text=${this.picturesPrompt.search}`
-        )
-        .then((response) => {
-          response = new DOMParser().parseFromString(
-            response.data,
-            "application/xml"
-          );
-          for (let photo of response.getElementsByTagName("photo")) {
-            const serverId = photo.getAttribute("server");
-            const id = photo.getAttribute("id");
-            const secret = photo.getAttribute("secret");
-            pictures.push(
-              `https://live.staticflickr.com/${serverId}/${id}_${secret}_s.jpg`
-            );
-          }
-        });
-      const widgetInfo = {
-        componentName: "Pictures",
-        configurable: true,
-        materialIcon: "image",
-        title: "Images",
-        subtitle: this.picturesPrompt.search,
-        properties: {
-          pictures,
-          nbPictures: 3,
-        },
-      };
-      this.addWidget(widgetInfo);
-      this.picturesPrompt.search = "";
-    },
-    getMichelBillaudTwitter: function () {
-      const widgetInfo = {
-        componentName: "MichelBillaudTwitter",
-        materialIcon: "person",
-        configurable: false,
-        title: "@MichelBillaud",
-      };
-      this.addWidget(widgetInfo);
-    },
-    getNews: function () {
-      axios
-        .get(
-          `https://newsapi.org/v2/everything?q=${this.newsPrompt.search}&apiKey=d8567e8a076140a08c7ee9d4a2d459fa`
-        )
-        .then((response) => {
-          const widgetInfo = {
-            componentName: "News",
-            configurable: false,
-            materialIcon: "article",
-            title: "News",
-            subtitle: this.newsPrompt.search,
-            properties: {
-              articles: response.data.articles,
-            },
-          };
-          this.addWidget(widgetInfo);
-          this.newsPrompt.search = "";
-        });
+    getWidgetData: function (request) {
+      const widgetType = request.widgetType;
+      const widget = new Widget(widgetType.information);
+      if (Object.prototype.hasOwnProperty.call(widgetType, "api")) {
+        const input = request.input;
+        const url = new URL(widgetType.api);
+        url.searchParams.set(widgetType.paramName, input);
+        axios
+          .get(url)
+          .then((response) => {
+            switch (widgetType.id) {
+              case this.widgetTypes.WEATHER.id:
+                {
+                  const data = response.data;
+                  widget.subtitle = data.location.name;
+                  widget.properties = {
+                    temperature: data.current.temperature,
+                    icon: data.current.weather_icons[0],
+                  };
+                }
+                break;
+              case this.widgetTypes.PICTURES.id:
+                {
+                  response = new DOMParser().parseFromString(
+                    response.data,
+                    "application/xml"
+                  );
+                  const pictures = [];
+                  for (let photo of response.getElementsByTagName("photo")) {
+                    const serverId = photo.getAttribute("server");
+                    const id = photo.getAttribute("id");
+                    const secret = photo.getAttribute("secret");
+                    pictures.push(
+                      `https://live.staticflickr.com/${serverId}/${id}_${secret}_s.jpg`
+                    );
+                    widget.subtitle = input;
+                    widget.properties = {
+                      pictures,
+                      nbPictures: 3,
+                    };
+                  }
+                }
+                break;
+              case this.widgetTypes.NEWS.id:
+                widget.subtitle = input;
+                widget.properties = {
+                  articles: response.data.articles,
+                };
+                break;
+            }
+            this.$emit("onReceivedDataWidget", widget);
+          })
+          .catch((e) => {
+            console.error(e);
+            this.$emit("onError");
+          });
+      } else {
+        this.$emit("onReceivedDataWidget", widget);
+      }
     },
   },
 };
